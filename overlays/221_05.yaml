@@ -1,0 +1,22 @@
+options:
+  platform:     psx
+  basename:     221
+  base_path:    .
+  target_path:  data/overlays/221_05.bin
+  asm_path:     asm/overlays/221
+  asset_path:   assets/overlays/221
+  src_path:     src/overlays/221
+  compiler: GCC
+  find_file_boundaries: yes
+  enable_ld_alignment_hack: yes
+segments:
+  - name:  main
+    type:  code
+    start: 0x00000000
+    vram:  0x8009F6FC
+    subalign: 4
+    subsegments:
+     - [0x0, data]   # data?
+     - [0x14, asm]
+     - [0x4F0, asm] # more data?
+  - [0x540]

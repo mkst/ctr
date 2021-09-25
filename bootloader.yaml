@@ -1,0 +1,60 @@
+options:
+  platform:     psx
+  basename:     bootloader
+  base_path:    .
+  target_path:  bootloader.dat
+  asm_path:     asm/bootloader
+  asset_path:   assets/bootloader
+  src_path:     src/bootloader
+  # compiler
+  compiler: GCC
+  # disasm/linker
+  symbol_addrs_path:    symbol_addrs.bootloader.txt
+  undefined_syms_path:  undefined_syms.bootloader.txt
+  undefined_funcs_auto_path: undefined_funcs_auto.bootloader.txt
+  undefined_syms_auto_path: undefined_syms_auto.bootloader.txt
+  find_file_boundaries: yes
+  enable_ld_alignment_hack: yes
+segments:
+  - [0x0, header]    # data?
+  - [0x84, bin]      # zero padding
+  - name:  main
+    type:  code
+    start: 0x00000800
+    vram:  0x80010000    # per header
+    # subalign: 16
+    subsegments:
+      - [0x800, data]    # data?
+      - [0x2BE0, asm]    # first function?  # 0x800123E0
+      - [0x1DAB0, c]     # force file splits on 0x10 boundaries for now
+      - [0x1EB50, asm]
+      - [0x61D90, asm]   # library funcs start around here
+      - [0x65B10, asm]
+      - [0x65B50, asm]
+      - [0x65E60, asm]
+      - [0x65FC0, asm]
+      - [0x66240, asm]
+      - [0x663A0, asm]
+      - [0x664C0, asm]
+      - [0x669B0, asm]
+      - [0x669E0, asm]
+      - [0x66AB0, asm]
+      - [0x66B10, asm]
+      - [0x66B70, asm]
+      - [0x66C20, asm]
+      - [0x66D60, asm]
+      - [0x66FD0, asm]
+      - [0x67000, c]     # part of LIBSPU.C
+      - [0x67070, asm]
+      - [0x67110, asm]
+      - [0x67190, asm]
+      - [0x6D070, asm]
+      - [0x6D1A0, asm]
+      - [0x6EF40, asm]
+      - [0x70080, asm]
+      - [0x70130, asm]
+      - [0x707A0, asm]
+      - [0x70A60, asm]
+      - [0x70D20, asm]
+      - [0x70FA0, bin]   # more data (approximate start, might be earlier)
+  - [0x7E000]

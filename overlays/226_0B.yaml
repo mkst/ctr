@@ -1,0 +1,21 @@
+options:
+  platform:     psx
+  basename:     226_0B
+  base_path:    .
+  target_path:  data/overlays/226_0B.bin
+  asm_path:     asm/226_0B
+  asset_path:   assets/226_0B
+  src_path:     src/226_0B
+  compiler: GCC
+  find_file_boundaries: yes
+  enable_ld_alignment_hack: yes
+segments:
+  - name:  main
+    type:  code
+    start: 0x00000000
+    vram:  0x800A0CB8
+    subalign: 4
+    subsegments:
+     - [0x0, asm]   # data?
+     - [0x4, asm]
+  - [0xACB8]

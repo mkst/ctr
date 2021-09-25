@@ -1,0 +1,17 @@
+# files
+
+*.big
+*.ld
+*auto*.txt
+*.exe
+*.26
+*.dat
+
+# directories
+
+__pycache__/
+asm/
+assets/
+build/
+data/
+junk/
