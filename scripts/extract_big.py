@@ -24,7 +24,6 @@ def main(bigfile, mapfile, outdir="data"):
 
     size_factor = 0x800  # so says https://forum.xentax.com/viewtopic.php?f=10&t=11806
 
-    offsets = []
     for i in range(file_count):
         o, l, t = struct.unpack("<IHH", data[file_offset+i*8:file_offset+i*8 + 4+2+2])
         filepath = outdir / filepaths.get(i, Path(f"unnamed_{i:3}.bin"))

@@ -1,21 +1,46 @@
 # Crash Team Racing PSX Decompilation
 
-Proof of concept PSX decompilation using N64 decomp tooling.
+Proof of concept PSX decompilation of Crash Team Racing (SCUS-94426) using N64 decomp tooling.
 
 ## Building
 
-Copy in `scus_944.26` as `bootloader.dat`.
+The instructions below assume that you will be using `Ubuntu 20.04`; either natively, via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10), or via [Docker](https://docs.docker.com/get-docker/).
+
+Please check the [packages.txt](packages.txt) and [requirements.txt](requirements.txt) for the prerequisite Linux and Python packages respectively. You'll also need the `mips-elf` flavour of `binutils`.
+
+**NOTE:** You can take the precompiled binutils binaries from the [here](https://github.com/mkst/esa/releases/download/mips-elf-binaries/mips-elf.tar.gz).
+
+### Cloning
+
+Clone the repository; note the `--recursive` flag to fetch submodules at the same time:
 
 ```sh
-git clone --recursive
+git clone git@github.com:mkst/ctr.git --recursive
 ```
 
-**Extract code/data:**
+Navigate into the freshly cloned repo
+
+```sh
+cd ctr
+```
+
+Copy in `scus_944.26` from the CTR US CDROM as `bootloader.dat`.
+
+### Using Docker
+
+Spin up a container using the pre-built, ready-to-go, image:
+```sh
+docker run --rm -ti -v $(pwd):/ctr ghcr.io/mkst/ctr:latest
+```
+
+### Common Steps
+
+**Extract code/data from `bootloader.dat`:**
 ```sh
 make extract
 ```
 
-**Rebuild:**
+**Rebuild as `build/bootloader.dat`:**
 ```
 make
 ```
