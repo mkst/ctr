@@ -1,6 +1,8 @@
 # Crash Team Racing PSX Decompilation
 
-Proof of concept PSX decompilation of Crash Team Racing (SCUS-94426) using N64 decomp tooling.
+![build](https://github.com/mkst/ctr/workflows/build/badge.svg)
+
+Proof of concept PSX decompilation of Crash Team Racing `SCUS-94426` using N64 decomp tooling.
 
 ## Building
 
@@ -24,7 +26,7 @@ Navigate into the freshly cloned repo
 cd ctr
 ```
 
-Copy in `scus_944.26` from the CTR US CDROM as `bootloader.dat`.
+Copy in `scus_944.26` from the `SCUS-94426` CDROM as `bootloader.dat`.
 
 ### Using Docker
 
@@ -47,7 +49,7 @@ make
 
 ## Modifying Code
 
-Once you have an :OK: build, copy it into the `expected/` folder so `asm-differ` can use it as a reference.
+Once you have an :ok: build, copy it into the `expected/` folder so `asm-differ` can use it as a reference.
 
 ```
 cp -r build/ expected/

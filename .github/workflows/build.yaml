@@ -1,0 +1,36 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push' }}
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout this repo
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Checkout binaries
+      uses: actions/checkout@v2
+      with:
+        repository: mkst/ctr-private
+        token: ${{ secrets.PRIVATE_REPO_ACCESS }}
+        path: binaries
+    - name: Decrypt binaries
+      run: echo ${{ secrets.CTR_BINARIES }} | openssl enc -d -aes-256-cbc -pass stdin -pbkdf2 -in binaries/bootloader.dat.aes -out bootloader.dat
+
+    - name: Perform make extract
+      uses: docker://ghcr.io/mkst/ctr:latest
+      with:
+        args: make extract
+    - name: Perform make
+      uses: docker://ghcr.io/mkst/ctr:latest
+      env:
+        WINEPREFIX: /ctr/.wine
+      with:
+        args: make all
