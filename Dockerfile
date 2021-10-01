@@ -2,8 +2,8 @@ FROM ubuntu:20.04 as binutils
 
 RUN apt-get update && apt-get install -y wget build-essential
 
-ARG BINUTILS_VERSION=2.36.1
-ARG BINUTILS_SHA1SUM=968cddc17354142ab7d60b93d7f169ec8373a9f4
+ARG BINUTILS_VERSION=2.25.1
+ARG BINUTILS_SHA1SUM=1d597ae063e3947a5f61e23ceda8aebf78405fcd
 
 RUN wget https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2 && \
   echo "${BINUTILS_SHA1SUM}  binutils-${BINUTILS_VERSION}.tar.bz2" | sha1sum --check && \
