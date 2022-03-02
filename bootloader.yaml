@@ -1,6 +1,7 @@
 options:
   platform:     psx
   basename:     bootloader
+  # paths
   base_path:    .
   target_path:  bootloader.dat
   asm_path:     asm/bootloader
@@ -8,27 +9,35 @@ options:
   src_path:     src/bootloader
   # compiler
   compiler: GCC
+  gp_value: 0
   # disasm/linker
   symbol_addrs_path:    symbol_addrs.bootloader.txt
   undefined_syms_path:  undefined_syms.bootloader.txt
   undefined_funcs_auto_path: undefined_funcs_auto.bootloader.txt
-  undefined_syms_auto_path: undefined_syms_auto.bootloader.txt
+  undefined_syms_auto_path:  undefined_syms_auto.bootloader.txt
   find_file_boundaries: yes
   enable_ld_alignment_hack: yes
+  # split
+  use_legacy_include_asm: no
+  section_order:
+  - .rodata
+  - .text
+  - .data
+  - .bss
 segments:
-  - [0x0, header]    # data?
-  - [0x84, bin]      # zero padding
+  - [0x0, header]
+  - [0x84, bin]         # zero padding
   - name:  main
     type:  code
     start: 0x00000800
-    vram:  0x80010000    # per header
+    vram:  0x80010000   # per header
     subalign: 4
     subsegments:
-      - [0x800, data]    # data?
-      - [0x2BE0, asm]    # first function?  # 0x800123E0
-      - [0x1DAB0, c]     # force file splits on 0x10 boundaries for now
+      - [0x800, bin]    # rodata
+      - [0x2BE0, asm]   # first function?  # 0x800123E0
+      - [0x1DAB0, c]    # force file splits on 0x10 boundaries for now
       - [0x1EB50, asm]
-      - [0x61D90, asm]   # library funcs start around here
+      - [0x61D90, asm]  # library funcs start around here
       - [0x65B10, asm]
       - [0x65B50, asm]
       - [0x65E60, asm]

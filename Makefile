@@ -44,9 +44,9 @@ AS              := $(CROSS)as -EL
 LD              := $(CROSS)ld -EL
 OBJCOPY         := $(CROSS)objcopy
 
-CC_PSYQ_41      := $(WINE) $(TOOLS_DIR)/psyq/4.1/CC1PSX.EXE
-CC_PSYQ_43      := $(WINE) $(TOOLS_DIR)/psyq/4.3/CC1PSX.EXE
-CC_PSYQ_46      := $(WINE) $(TOOLS_DIR)/psyq/4.6/CC1PSX.EXE
+CC_PSYQ_41      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.1/CC1PSX.EXE
+CC_PSYQ_43      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.3/CC1PSX.EXE
+CC_PSYQ_46      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.6/CC1PSX.EXE
 
 CC              := $(CC_PSYQ_41)
 
