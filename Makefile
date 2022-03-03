@@ -44,22 +44,29 @@ AS              := $(CROSS)as -EL
 LD              := $(CROSS)ld -EL
 OBJCOPY         := $(CROSS)objcopy
 
-CC_PSYQ_41      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.1/CC1PSX.EXE
-CC_PSYQ_43      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.3/CC1PSX.EXE
-CC_PSYQ_46      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.6/CC1PSX.EXE
+CC_PSYQ_40      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.0/CC1PSX.EXE -quiet
+CC_PSYQ_41      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.1/CC1PSX.EXE -quiet
+CC_PSYQ_43      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.3/CC1PSX.EXE -quiet
+CC_PSYQ_46      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.6/CC1PSX.EXE -quiet
 
-CC              := $(CC_PSYQ_41)
+AS_PSYQ_40      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.0/ASPSX.EXE -quiet
+AS_PSYQ_41      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.1/ASPSX.EXE -quiet
+AS_PSYQ_43      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.3/ASPSX.EXE -quiet
+AS_PSYQ_46      := $(WINE) $(TOOLS_DIR)/psyq/psyq4.6/ASPSX.EXE -quiet
+
+
+PSYQ2ELF        := $(TOOLS_DIR)/psyq/psyq-obj-parser
+
+CC              := $(CC_PSYQ_46)
 
 SPLAT           := $(PYTHON) $(TOOLS_DIR)/splat/split.py
 
 
 # FLAGS
 
-AS_INCLUDES     := -Iinclude
-AS_FLAGS        := -march=r3000 -mtune=r3000
-AS_FLAGS        += $(AS_INCLUDES)
+AS_FLAGS        := -Iinclude -march=r3000 -mtune=r3000
 
-CPP_INCLUDES    := -Iinclude
+CPP_INCLUDES    := -Iinclude -Iinclude/psyq
 CPP_FLAGS       := -undef -Wall -lang-c
 CPP_FLAGS       += -Dmips -D__GNUC__=2 -D__OPTIMIZE__ -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D__CHAR_UNSIGNED__ -D_LANGUAGE_C -DLANGUAGE_C
 CPP_FLAGS       += $(CPP_INCLUDES)
@@ -68,7 +75,7 @@ ifdef PERMUTER
 CPP_FLAGS       += -DPERMUTER
 endif
 
-CC_FLAGS        := -quiet -G0 -Wall
+CC_FLAGS        := -G0 -Wall -fno-builtin
 OPT_FLAGS       := -O2
 
 BOOT_LD_FLAGS   := -Map $(BOOT_TARGET).map -T $(BOOT_BASENAME).ld \
@@ -79,7 +86,21 @@ OBJCOPY_FLAGS   := -O binary
 
 # OVERRIDES
 
+
 $(BUILD_DIR)/src/bootloader/1DAB0.c.o: CC := $(CC_PSYQ_46)
+
+$(BUILD_DIR)/src/bootloader/1E4AC.c.o: CC := $(CC_PSYQ_46)
+# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: AS := $(AS_PSYQ_46)
+# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: AS_FLAGS :=
+# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: CPP_FLAGS += -DINCLUDE_ASM
+
+$(BUILD_DIR)/src/bootloader/67070.c.o: CC := $(CC_PSYQ_40)
+
+# psyq + objconverter
+$(BUILD_DIR)/src/bootloader/67000.c.o: CC := $(CC_PSYQ_40)
+$(BUILD_DIR)/src/bootloader/67000.c.o: AS := $(AS_PSYQ_40)
+$(BUILD_DIR)/src/bootloader/67000.c.o: AS_FLAGS :=
+$(BUILD_DIR)/src/bootloader/67000.c.o: CPP_FLAGS += -DINCLUDE_ASM
 
 default: all
 
@@ -117,7 +138,9 @@ $(BUILD_DIR)/%.bin.o: %.bin
 	$(LD) -r -b binary -o $@ $<
 
 $(BUILD_DIR)/%.c.o: %.c
-	$(CPP) $(CPP_FLAGS) $(CPP_TARGET) $< | $(UNIX2DOS) | $(CC) $(CC_FLAGS) $(OPT_FLAGS) | $(AS) $(AS_FLAGS) -o $@
+	$(CPP) $(CPP_FLAGS) $(CPP_TARGET) $< | $(UNIX2DOS) | $(CC) $(CC_FLAGS) $(OPT_FLAGS) -o $@.s
+	$(AS) $(AS_FLAGS) $@.s -o $@.obj
+	if [[ "$$(dd if=$@.obj bs=1 skip=1 count=3 status=none)" = "ELF" ]] ; then cp $@.obj $@; else $(PSYQ2ELF) $@.obj -o $@ ; fi
 
 %.ok: %.dat
 	@echo "$$(cat $(notdir $(<:.dat=)).sha1)  $<" | sha1sum --check

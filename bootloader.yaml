@@ -36,6 +36,8 @@ segments:
       - [0x800, bin]    # rodata
       - [0x2BE0, asm]   # first function?  # 0x800123E0
       - [0x1DAB0, c]    # force file splits on 0x10 boundaries for now
+      - [0x1E4AC, c]    # 1 function
+      - [0x1E524, c]
       - [0x1EB50, asm]
       - [0x61D90, asm]  # library funcs start around here
       - [0x65B10, asm]
@@ -55,9 +57,11 @@ segments:
       - [0x66FD0, asm]
       - [0x67000, c]     # part of LIBSPU.C
       - [0x67064, bin]   # NOP alignment for previous file
-      - [0x67070, asm]
+      - [0x67070, c]
       - [0x67110, asm]
       - [0x67190, asm]
+      - [0x6AD94, c]
+      - [0x6AE7C, asm]
       - [0x6D070, asm]
       - [0x6D1A0, asm]
       - [0x6EF40, asm]
