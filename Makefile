@@ -102,6 +102,12 @@ $(BUILD_DIR)/src/bootloader/67000.c.o: AS := $(AS_PSYQ_40)
 $(BUILD_DIR)/src/bootloader/67000.c.o: AS_FLAGS :=
 $(BUILD_DIR)/src/bootloader/67000.c.o: CPP_FLAGS += -DINCLUDE_ASM
 
+$(BUILD_DIR)/src/bootloader/allocpool.c.o: CC := $(CC_PSYQ_43)
+$(BUILD_DIR)/src/bootloader/allocpool.c.o: AS := $(AS_PSYQ_43)
+$(BUILD_DIR)/src/bootloader/allocpool.c.o: AS_FLAGS :=
+$(BUILD_DIR)/src/bootloader/allocpool.c.o: CPP_FLAGS += -DINCLUDE_ASM
+
+
 default: all
 
 all: dirs verify
