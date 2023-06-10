@@ -1,14 +1,9 @@
 #ifndef INCLUDE_ASM_H
 #define INCLUDE_ASM_H
 
-#define STRINGIFY_(x) #x
-#define STRINGIFY(x) STRINGIFY_(x)
-
 #ifndef PERMUTER
 
 #ifndef INCLUDE_ASM
-
-__asm__(".include \"include/macro.inc\"\n");
 
 #define INCLUDE_ASM(FOLDER, NAME) \
 __asm__( \
