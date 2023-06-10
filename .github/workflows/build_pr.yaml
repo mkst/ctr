@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout this repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
     - name: Checkout binaries
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: mkst/ctr-private
         token: ${{ secrets.PRIVATE_REPO_ACCESS }}

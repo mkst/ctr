@@ -37,9 +37,9 @@ WINE            := wine
 SED             := sed
 UNIX2DOS        := unix2dos
 
-CPP             := cpp -P
+CPP             := cpp -E
 
-CROSS           := mips-elf-
+CROSS           := mips-linux-gnu-
 AS              := $(CROSS)as -EL
 LD              := $(CROSS)ld -EL
 OBJCOPY         := $(CROSS)objcopy
@@ -64,7 +64,7 @@ SPLAT           := $(PYTHON) $(TOOLS_DIR)/splat/split.py
 
 # FLAGS
 
-AS_FLAGS        := -Iinclude -march=r3000 -mtune=r3000
+AS_FLAGS        := -Iinclude -march=r3000 -mtune=r3000 -no-pad-sections
 
 CPP_INCLUDES    := -Iinclude -Iinclude/psyq
 CPP_FLAGS       := -undef -Wall -lang-c
@@ -80,32 +80,19 @@ OPT_FLAGS       := -O2
 
 BOOT_LD_FLAGS   := -Map $(BOOT_TARGET).map -T $(BOOT_BASENAME).ld \
                    -T undefined_syms_auto.$(BOOT_BASENAME).txt -T undefined_funcs_auto.$(BOOT_BASENAME).txt -T undefined_syms.$(BOOT_BASENAME).txt \
-				   --no-check-sections
+                   --no-check-sections
 
 OBJCOPY_FLAGS   := -O binary
 
 # OVERRIDES
 
-
 $(BUILD_DIR)/src/bootloader/1DAB0.c.o: CC := $(CC_PSYQ_46)
-
 $(BUILD_DIR)/src/bootloader/1E4AC.c.o: CC := $(CC_PSYQ_46)
-# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: AS := $(AS_PSYQ_46)
-# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: AS_FLAGS :=
-# $(BUILD_DIR)/src/bootloader/1E4AC.c.o: CPP_FLAGS += -DINCLUDE_ASM
 
+$(BUILD_DIR)/src/bootloader/67000.c.o: CC := $(CC_PSYQ_40)
 $(BUILD_DIR)/src/bootloader/67070.c.o: CC := $(CC_PSYQ_40)
 
-# psyq + objconverter
-$(BUILD_DIR)/src/bootloader/67000.c.o: CC := $(CC_PSYQ_40)
-$(BUILD_DIR)/src/bootloader/67000.c.o: AS := $(AS_PSYQ_40)
-$(BUILD_DIR)/src/bootloader/67000.c.o: AS_FLAGS :=
-$(BUILD_DIR)/src/bootloader/67000.c.o: CPP_FLAGS += -DINCLUDE_ASM
-
 $(BUILD_DIR)/src/bootloader/allocpool.c.o: CC := $(CC_PSYQ_43)
-$(BUILD_DIR)/src/bootloader/allocpool.c.o: AS := $(AS_PSYQ_43)
-$(BUILD_DIR)/src/bootloader/allocpool.c.o: AS_FLAGS :=
-$(BUILD_DIR)/src/bootloader/allocpool.c.o: CPP_FLAGS += -DINCLUDE_ASM
 
 
 default: all
@@ -138,15 +125,14 @@ $(BOOT_TARGET).elf: $(BOOT_O_FILES)
 	$(LD) $(BOOT_LD_FLAGS) -o $@
 
 $(BUILD_DIR)/%.s.o: %.s
-	$(AS) $(AS_FLAGS) -o $@ $<
+	$(AS) -G0 $(AS_FLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.bin.o: %.bin
 	$(LD) -r -b binary -o $@ $<
 
 $(BUILD_DIR)/%.c.o: %.c
-	$(CPP) $(CPP_FLAGS) $(CPP_TARGET) $< | $(UNIX2DOS) | $(CC) $(CC_FLAGS) $(OPT_FLAGS) -o $@.s
-	$(AS) $(AS_FLAGS) $@.s -o $@.obj
-	if [[ "$$(dd if=$@.obj bs=1 skip=1 count=3 status=none)" = "ELF" ]] ; then cp $@.obj $@; else $(PSYQ2ELF) $@.obj -o $@ ; fi
+	$(CPP) $(CPP_FLAGS) $(CPP_TARGET) $< | $(UNIX2DOS) | $(CC) $(CC_FLAGS) $(OPT_FLAGS) | $(PYTHON) tools/maspsx/maspsx.py > $@.s
+	$(AS) $(AS_FLAGS) -o $@ $@.s
 
 %.ok: %.dat
 	@echo "$$(cat $(notdir $(<:.dat=)).sha1)  $<" | sha1sum --check
